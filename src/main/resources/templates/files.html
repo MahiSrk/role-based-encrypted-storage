@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REKS - My Files</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .file-card {
+            transition: transform 0.2s;
+        }
+        .file-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .upload-container {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">REKS</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/files}">My Files</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/search}">Search</a>
+                    </li>
+                </ul>
+                <form th:action="@{/logout}" method="post" class="d-flex">
+                    <button class="btn btn-outline-light" type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="mb-4">My Encrypted Files</h2>
+        
+        <!-- File Upload Section -->
+        <div class="upload-container">
+            <h4>Upload New File</h4>
+            <form th:action="@{/api/files/upload}" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="file" class="form-label">Select File</label>
+                    <input class="form-control" type="file" id="file" name="file" required>
+                </div>
+                <div class="mb-3">
+                    <label for="roleId" class="form-label">Access Role</label>
+                    <select class="form-select" id="roleId" name="roleId" required>
+                        <option th:each="role : ${roles}" 
+                                th:value="${role.id}" 
+                                th:text="${role.name}"></option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+
+        <!-- Recent Files Section -->
+        <div class="mt-5">
+            <h4 class="mb-3">Recent Files</h4>
+            <div class="alert alert-info" th:if="${files.empty}">
+                You haven't uploaded any files yet.
+            </div>
+            
+            <div class="row" th:unless="${files.empty}">
+                <div class="col-md-4 mb-4" th:each="file : ${files}">
+                    <div class="card file-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${file.filename}"></h5>
+                            <p class="card-text text-muted small">
+                                <span th:text="${#temporals.format(file.createdAt, 'MMM dd, yyyy HH:mm')}"></span>
+                                <br>
+                                Access: <span th:text="${file.accessRole.name}"></span>
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a th:href="@{'/api/files/download/' + ${file.id}}" class="btn btn-sm btn-outline-primary">Download</a>
+                            <button class="btn btn-sm btn-outline-danger ms-2">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple upload feedback
+        document.querySelector('form').addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...';
+        });
+    </script>
+</body>
+</html>
