@@ -58,14 +58,16 @@ A secure file management system built with **Spring Boot** that enables **encryp
       Update your application.properties:
       
       spring.datasource.url=jdbc:mysql://localhost:3306/reks_db
+   
       spring.datasource.username=root
+   
       spring.datasource.password=yourpassword
 
-3. **Run the application**
+4. **Run the application**
 
       mvn spring-boot:run
 
-4. **Visit**
+5. **Visit**
      http://localhost:8080/login
 
 ## 🚀 Future Enhancements
